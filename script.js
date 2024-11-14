@@ -29,7 +29,7 @@ compressButton.addEventListener('click', async () => {
         statusText.textContent = "動画を圧縮中...";
         const outputFileName = 'output.mp4';
         await ffmpeg.run(
-            '-i', fileName,
+            '-i', 'fileName',
             '-b:v', '500k',         // ビデオのビットレートを500kbpsに設定
             '-maxrate', '500k',
             '-bufsize', '1000k',
