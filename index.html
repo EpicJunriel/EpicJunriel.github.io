@@ -48,11 +48,10 @@
         }
       });
 
-      // ログの表示設定
       ffmpeg.setLogger(({ type, message }) => {
         const logOutput = document.getElementById('logOutput');
         logOutput.textContent += `[${type}] ${message}\n`;
-        logOutput.scrollTop = logOutput.scrollHeight; // 自動スクロール
+        logOutput.scrollTop = logOutput.scrollHeight;
       });
 
       await ffmpeg.load();
@@ -93,6 +92,13 @@
       });
     }
 
+    // 出力ファイル名の生成
+    function getOutputFileName(inputFileName) {
+      const baseName = inputFileName.substring(0, inputFileName.lastIndexOf('.'));
+      const extension = inputFileName.substring(inputFileName.lastIndexOf('.'));
+      return `${baseName}_compressed${extension}`;
+    }
+
     // 動画圧縮処理
     async function compressVideo(file) {
       const progressBar = document.getElementById('progressBar');
@@ -100,12 +106,13 @@
       progressBar.value = 0;
 
       const fileName = file.name;
+      const outputFileName = getOutputFileName(fileName);
       await ffmpeg.FS('writeFile', fileName, new Uint8Array(await file.arrayBuffer()));
 
       // 動画を10MB程度に圧縮するコマンド
-      await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '10M', 'output.mp4');
+      await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '10M', outputFileName);
 
-      const data = ffmpeg.FS('readFile', 'output.mp4');
+      const data = ffmpeg.FS('readFile', outputFileName);
       const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
       const url = URL.createObjectURL(videoBlob);
 
@@ -114,10 +121,11 @@
 
       const downloadBtn = document.getElementById('downloadBtn');
       downloadBtn.style.display = 'inline-block';
+      downloadBtn.textContent = `${outputFileName} をダウンロード`;
       downloadBtn.onclick = () => {
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'compressed_video.mp4';
+        a.download = outputFileName;
         a.click();
       };
 
