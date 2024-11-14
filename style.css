@@ -66,7 +66,7 @@
     width: 100%;
     padding: 10px;
     margin-top: 10px;
-    background: #28a745; /* 緑色で「完了」を示す */
+    background: #28a745;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -74,7 +74,7 @@
   }
   
   .download-btn:hover {
-    background: #218838; /* ホバー時の色を少し濃く */
+    background: #218838;
   }
   
   .progress-bar {

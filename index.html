@@ -45,11 +45,27 @@
         }
       });
 
+      // ログの自動スクロールを有効にする関数
+      function enableAutoScroll() {
+        const logOutput = document.getElementById('logOutput');
+
+        // MutationObserver を使用してログの変更を監視
+        const observer = new MutationObserver(() => {
+          logOutput.scrollTop = logOutput.scrollHeight;
+        });
+
+        // 監視設定：子ノードの変更を監視
+        observer.observe(logOutput, { childList: true });
+      }
+
+      // ffmpeg のログ出力設定
       ffmpeg.setLogger(({ type, message }) => {
         const logOutput = document.getElementById('logOutput');
         logOutput.textContent += `[${type}] ${message}\n`;
-        logOutput.scrollTop = logOutput.scrollHeight; // 自動スクロールを有効にする
       });
+
+      // 自動スクロールを有効にする
+      enableAutoScroll();
 
       await ffmpeg.load();
     }
