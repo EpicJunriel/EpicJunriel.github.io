@@ -118,7 +118,7 @@
       const outputFileName = getOutputFileName(fileName);
       await ffmpeg.FS('writeFile', fileName, new Uint8Array(await file.arrayBuffer()));
 
-      await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '10M', outputFileName);
+      await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '8M', outputFileName);
 
       const data = ffmpeg.FS('readFile', outputFileName);
       const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
