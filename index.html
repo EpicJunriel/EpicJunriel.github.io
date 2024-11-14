@@ -7,13 +7,18 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>動画圧縮ツール (10MB以下に圧縮)</h1>
-  <input type="file" id="videoInput" accept="video/*">
-  <button id="compressButton">動画を圧縮</button>
-  <p id="status"></p>
-  <video id="outputVideo" controls></video>
-  <a id="downloadLink" style="display:none;">ダウンロード</a>
-
+  <div class="container">
+    <h1>動画圧縮ツール</h1>
+    <p>10MB以下に圧縮</p>
+    <label for="videoInput" class="custom-file-upload">
+      ファイルを選択
+      <input type="file" id="videoInput" accept="video/*">
+    </label>
+    <button id="compressButton">圧縮する</button>
+    <div id="status"></div>
+    <video id="outputVideo" controls></video>
+    <a id="downloadLink" style="display:none;">ダウンロード</a>
+  </div>
   <script src="script.js"></script>
 </body>
 </html>

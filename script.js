@@ -9,20 +9,32 @@ const downloadLink = document.getElementById('downloadLink');
 
 let ffmpeg;
 
+// ffmpeg の初期化
 async function loadFFmpeg() {
   ffmpeg = await initFFmpeg();
   await ffmpeg.load();
-  status.textContent = 'ffmpeg.wasm 読み込み完了';
+  updateStatus('ffmpeg.wasm 読み込み完了');
 }
 
-async function compressVideo(file) {
-  status.textContent = '圧縮中...お待ちください';
+// ステータス更新関数にアニメーションを追加
+function updateStatus(message) {
+  status.style.transition = 'opacity 0.2s';
+  status.style.opacity = '0';
+  setTimeout(() => {
+    status.textContent = message;
+    status.style.opacity = '1';
+  }, 200);
+}
 
-  // 入力ファイルを ffmpeg にロード
+// 動画圧縮関数
+async function compressVideo(file) {
+  updateStatus('圧縮中...お待ちください');
+
   const inputFileName = 'input.mp4';
   const outputFileName = 'output.mp4';
   const inputBuffer = await file.arrayBuffer();
 
+  // 入力ファイルを ffmpeg にロード
   ffmpeg.FS('writeFile', inputFileName, new Uint8Array(inputBuffer));
 
   // ffmpeg コマンドで動画を圧縮
@@ -40,17 +52,18 @@ async function compressVideo(file) {
 
   // ファイルサイズが 10MB 以下になるか確認
   if (outputBlob.size <= 10 * 1024 * 1024) {
-    status.textContent = '圧縮完了！';
+    updateStatus('圧縮完了！');
     const outputUrl = URL.createObjectURL(outputBlob);
     outputVideo.src = outputUrl;
     downloadLink.href = outputUrl;
     downloadLink.textContent = '圧縮動画をダウンロード';
     downloadLink.style.display = 'block';
   } else {
-    status.textContent = 'ファイルサイズが 10MB を超えています。ビットレートを調整してください。';
+    updateStatus('ファイルサイズが 10MB を超えています。ビットレートを調整してください。');
   }
 }
 
+// ボタンのクリックイベントリスナー
 compressButton.addEventListener('click', () => {
   const file = videoInput.files[0];
   if (file) {
