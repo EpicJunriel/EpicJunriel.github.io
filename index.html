@@ -48,7 +48,7 @@
       ffmpeg.setLogger(({ type, message }) => {
         const logOutput = document.getElementById('logOutput');
         logOutput.textContent += `[${type}] ${message}\n`;
-        logOutput.scrollTop = logOutput.scrollHeight;
+        logOutput.scrollTop = logOutput.scrollHeight; // 自動スクロールを有効にする
       });
 
       await ffmpeg.load();
