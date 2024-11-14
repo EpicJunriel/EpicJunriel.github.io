@@ -4,21 +4,65 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>動画圧縮ツール</title>
-  <link rel="stylesheet" href="style.css">
+  
+  <!-- COOPとCOEPの設定 -->
+  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+  <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@latest/dist/ffmpeg.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>動画圧縮ツール</h1>
-    <p>10MB以下に圧縮</p>
-    <label for="videoInput" class="custom-file-upload">
-      ファイルを選択
-      <input type="file" id="videoInput" accept="video/*">
-    </label>
-    <button id="compressButton">圧縮する</button>
-    <div id="status"></div>
-    <video id="outputVideo" controls></video>
-    <a id="downloadLink" style="display:none;">ダウンロード</a>
-  </div>
-  <script type="module" src="script.js"></script>
+  <h1>動画圧縮ツール</h1>
+
+  <p>動画をアップロードし、圧縮された動画をダウンロードできます。</p>
+  
+  <input type="file" id="upload" accept="video/*" />
+  <br><br>
+  <button id="compressBtn" disabled>圧縮開始</button>
+  <br><br>
+  <a id="downloadLink" href="#" download="compressed_video.mp4" style="display:none">ダウンロード</a>
+  
+  <script>
+    let ffmpeg;
+
+    // ffmpeg.wasm の初期化
+    async function initFFmpeg() {
+      ffmpeg = await FFmpeg.createFFmpeg({ log: true });
+      await ffmpeg.load();
+    }
+
+    // ファイルアップロード処理
+    document.getElementById('upload').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        document.getElementById('compressBtn').disabled = false;
+        document.getElementById('compressBtn').onclick = () => compressVideo(file);
+      }
+    });
+
+    // 動画圧縮処理
+    async function compressVideo(file) {
+      // ファイルをffmpegに入力する
+      const fileName = file.name;
+      await ffmpeg.FS('writeFile', fileName, new Uint8Array(await file.arrayBuffer()));
+
+      // 動画を10MB程度に圧縮するコマンド
+      await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '10M', 'output.mp4');
+
+      // 圧縮後のファイルをダウンロード可能にする
+      const data = ffmpeg.FS('readFile', 'output.mp4');
+      const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
+      const url = URL.createObjectURL(videoBlob);
+
+      // ダウンロードリンクを表示
+      const downloadLink = document.getElementById('downloadLink');
+      downloadLink.href = url;
+      downloadLink.style.display = 'inline-block';
+      downloadLink.textContent = '圧縮された動画をダウンロード';
+    }
+
+    // 初期化
+    initFFmpeg();
+  </script>
 </body>
 </html>
