@@ -10,41 +10,38 @@
   <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
   <script src="coi-serviceworker.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@latest/dist/ffmpeg.min.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Junnie's Video Compressor™</h1>
-
-  <p>動画を低ファイルサイズに圧縮します。処理はすべてローカルで実行されます！</p>
-  
-  <input type="file" id="upload" accept="video/*" />
-  <br><br>
-  <div id="videoInfo"></div>
-  <img id="thumbnail" style="max-width: 300px; display: none;" />
-  <br>
-  <button id="compressBtn" disabled>圧縮開始</button>
-  <br><br>
-  <progress id="progressBar" value="0" max="100" style="width: 100%; display: none;"></progress>
-  <br><br>
-  <div id="compressedInfo"></div>
-  <button id="downloadBtn" style="display: none;">圧縮された動画をダウンロード</button>
-  <br><br>
-  <div id="logContainer" style="max-height: 300px; overflow-y: auto; background: #f0f0f0; padding: 10px; border: 1px solid #ccc;">
-    <h3>ログ出力</h3>
-    <pre id="logOutput"></pre>
+  <div class="container">
+    <h1>Junnie's Video Compressor™</h1>
+    <p class="description">動画ファイルを迅速に圧縮。すべての処理はローカル環境で行われます。</p>
+    
+    <input type="file" id="upload" accept="video/*" class="file-input" />
+    <div id="videoInfo" class="info"></div>
+    <img id="thumbnail" class="thumbnail" />
+    
+    <button id="compressBtn" class="btn" disabled>圧縮開始</button>
+    <progress id="progressBar" value="0" max="100" class="progress-bar"></progress>
+    
+    <div id="compressedInfo" class="info"></div>
+    <button id="downloadBtn" class="btn" style="display: none;">ダウンロード</button>
+    
+    <div id="logContainer" class="log-container">
+      <h3>ログ出力</h3>
+      <pre id="logOutput"></pre>
+    </div>
   </div>
 
   <script>
     let ffmpeg;
 
-    // ffmpeg.wasm の初期化
     async function initFFmpeg() {
       ffmpeg = await FFmpeg.createFFmpeg({
         log: true,
         progress: (p) => {
           const progressBar = document.getElementById('progressBar');
-          if (p.ratio) {
-            progressBar.value = Math.round(p.ratio * 100);
-          }
+          if (p.ratio) progressBar.value = Math.round(p.ratio * 100);
         }
       });
 
@@ -57,7 +54,6 @@
       await ffmpeg.load();
     }
 
-    // ファイルアップロード処理
     document.getElementById('upload').addEventListener('change', (event) => {
       const file = event.target.files[0];
       if (file) {
@@ -67,15 +63,14 @@
       }
     });
 
-    // 動画情報の表示
     function displayVideoInfo(file) {
       const videoInfo = document.getElementById('videoInfo');
       const thumbnail = document.getElementById('thumbnail');
       const url = URL.createObjectURL(file);
 
       videoInfo.innerHTML = `
-        <p>タイトル: ${file.name}</p>
-        <p>ファイルサイズ: ${(file.size / (1024 * 1024)).toFixed(2)} MB</p>
+        <p>ファイル名: ${file.name}</p>
+        <p>サイズ: ${(file.size / (1024 * 1024)).toFixed(2)} MB</p>
       `;
 
       const video = document.createElement('video');
@@ -92,14 +87,12 @@
       });
     }
 
-    // 出力ファイル名の生成
     function getOutputFileName(inputFileName) {
       const baseName = inputFileName.substring(0, inputFileName.lastIndexOf('.'));
       const extension = inputFileName.substring(inputFileName.lastIndexOf('.'));
       return `${baseName}_compressed${extension}`;
     }
 
-    // 動画圧縮処理
     async function compressVideo(file) {
       const progressBar = document.getElementById('progressBar');
       progressBar.style.display = 'block';
@@ -109,7 +102,6 @@
       const outputFileName = getOutputFileName(fileName);
       await ffmpeg.FS('writeFile', fileName, new Uint8Array(await file.arrayBuffer()));
 
-      // 動画を10MB程度に圧縮するコマンド
       await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '10M', outputFileName);
 
       const data = ffmpeg.FS('readFile', outputFileName);
@@ -117,7 +109,7 @@
       const url = URL.createObjectURL(videoBlob);
 
       const compressedInfo = document.getElementById('compressedInfo');
-      compressedInfo.innerHTML = `<p>圧縮後のファイルサイズ: ${(videoBlob.size / (1024 * 1024)).toFixed(2)} MB</p>`;
+      compressedInfo.innerHTML = `<p>圧縮後のサイズ: ${(videoBlob.size / (1024 * 1024)).toFixed(2)} MB</p>`;
 
       const downloadBtn = document.getElementById('downloadBtn');
       downloadBtn.style.display = 'inline-block';
@@ -132,7 +124,6 @@
       progressBar.style.display = 'none';
     }
 
-    // 初期化
     initFFmpeg();
   </script>
 </body>
