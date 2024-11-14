@@ -34,6 +34,7 @@
     margin-bottom: 20px;
     text-align: center;
     color: #cccccc;
+    font-size: 14px;
   }
   
   .file-input {
@@ -61,13 +62,27 @@
     background: #555;
   }
   
+  .download-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    background: #28a745; /* 緑色で「完了」を示す */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .download-btn:hover {
+    background: #218838; /* ホバー時の色を少し濃く */
+  }
+  
   .progress-bar {
     width: 100%;
     margin-top: 10px;
-    appearance: none;
     height: 10px;
     border-radius: 5px;
-    background-color: #00ff7f; /* 見やすい緑色に変更 */
+    background-color: #00ff7f;
   }
   
   .info {

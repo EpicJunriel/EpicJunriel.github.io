@@ -15,7 +15,7 @@
 <body>
   <div class="container">
     <h1>Junnie's Video Compressor™</h1>
-    <p class="description">動画ファイルをローカル処理によって10MB程度まで圧縮します。</p>
+    <p class="description">このツールは、動画ファイルを迅速かつ簡単に圧縮するために設計されています。圧縮プロセスはすべてローカル環境で行われるため、プライバシーが保護されます。大きなファイルも問題なく処理でき、品質を維持しつつファイルサイズを削減します。特に、ファイルの共有やストレージの節約に役立ちます。</p>
     
     <input type="file" id="upload" accept="video/*" class="file-input" />
     <div id="videoInfo" class="info"></div>
@@ -25,7 +25,7 @@
     <progress id="progressBar" value="0" max="100" class="progress-bar"></progress>
     
     <div id="compressedInfo" class="info"></div>
-    <button id="downloadBtn" class="btn" style="display: none;">ダウンロード</button>
+    <button id="downloadBtn" class="download-btn" style="display: none;">ダウンロード</button>
     
     <div id="logContainer" class="log-container">
       <h3>ログ出力</h3>
@@ -113,6 +113,7 @@
 
       const downloadBtn = document.getElementById('downloadBtn');
       downloadBtn.style.display = 'inline-block';
+      downloadBtn.classList.add('download-btn');
       downloadBtn.textContent = `${outputFileName} をダウンロード`;
       downloadBtn.onclick = () => {
         const a = document.createElement('a');
