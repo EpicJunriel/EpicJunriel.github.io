@@ -1,59 +1,64 @@
-const { createFFmpeg, fetchFile } = FFmpeg;
-const ffmpeg = createFFmpeg({
-    corePath: './ffmpeg-core.wasm',
-    log: true,
-});
-const inputVideo = document.getElementById('inputVideo');
+// ffmpeg.wasm ‚Ìƒ[ƒh
+import initFFmpeg from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.1/dist/ffmpeg.min.js';
+
+const videoInput = document.getElementById('videoInput');
 const compressButton = document.getElementById('compressButton');
-const statusText = document.getElementById('status');
+const status = document.getElementById('status');
 const outputVideo = document.getElementById('outputVideo');
 const downloadLink = document.getElementById('downloadLink');
 
-compressButton.addEventListener('click', async () => {
-    if (!inputVideo.files[0]) {
-        alert("å‹•ç”»ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚");
-        return;
-    }
+let ffmpeg;
 
-    try {
-        // FFmpegã®èª­ã¿è¾¼ã¿
-        statusText.textContent = "FFmpegã‚’ãƒ­ãƒ¼ãƒ‰ä¸­...";
-        await ffmpeg.load();
+async function loadFFmpeg() {
+  ffmpeg = await initFFmpeg();
+  await ffmpeg.load();
+  status.textContent = 'ffmpeg.wasm “Ç‚İ‚İŠ®—¹';
+}
 
-        // å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
-        const file = inputVideo.files[0];
-        const originalFileName = file.name;
-        const tempFileName = 'input.mp4'; // ä¸€æ™‚çš„ãªãƒ•ã‚¡ã‚¤ãƒ«åã«å¤‰æ›´
+async function compressVideo(file) {
+  status.textContent = 'ˆ³k’†...‚¨‘Ò‚¿‚­‚¾‚³‚¢';
 
-        // ãƒ•ã‚¡ã‚¤ãƒ«ã‚’FFmpegã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚·ã‚¹ãƒ†ãƒ ã«æ›¸ãè¾¼ã¿
-        ffmpeg.FS('writeFile', tempFileName, await fetchFile(file));
+  // “ü—Íƒtƒ@ƒCƒ‹‚ğ ffmpeg ‚Éƒ[ƒh
+  const inputFileName = 'input.mp4';
+  const outputFileName = 'output.mp4';
+  const inputBuffer = await file.arrayBuffer();
 
-        // åœ§ç¸®å‡¦ç†ã®å®Ÿè¡Œ
-        statusText.textContent = "å‹•ç”»ã‚’åœ§ç¸®ä¸­...";
-        const outputFileName = 'output.mp4';
-        await ffmpeg.run(
-            '-i', tempFileName,
-            '-b:v', '500k',         // ãƒ“ãƒ‡ã‚ªã®ãƒ“ãƒƒãƒˆãƒ¬ãƒ¼ãƒˆã‚’500kbpsã«è¨­å®š
-            '-maxrate', '500k',
-            '-bufsize', '1000k',
-            '-vf', 'scale=-2:720',  // è§£åƒåº¦ã‚’720pã«å¤‰æ›´
-            '-preset', 'fast',
-            outputFileName
-        );
+  ffmpeg.FS('writeFile', inputFileName, new Uint8Array(inputBuffer));
 
-        // åœ§ç¸®ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®å–å¾—
-        const data = ffmpeg.FS('readFile', outputFileName);
-        const blob = new Blob([data.buffer], { type: 'video/mp4' });
+  // ffmpeg ƒRƒ}ƒ“ƒh‚Å“®‰æ‚ğˆ³k
+  await ffmpeg.run(
+    '-i', inputFileName,
+    '-b:v', '500k', // ƒrƒbƒgƒŒ[ƒgw’è
+    '-preset', 'fast',
+    '-movflags', 'faststart',
+    outputFileName
+  );
 
-        // å‡ºåŠ›å‹•ç”»ã®è¡¨ç¤ºã¨ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ãƒªãƒ³ã‚¯ã®è¨­å®š
-        const url = URL.createObjectURL(blob);
-        outputVideo.src = url;
-        downloadLink.href = url;
-        downloadLink.style.display = 'block';
-        downloadLink.textContent = "åœ§ç¸®ã•ã‚ŒãŸå‹•ç”»ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰";
-        statusText.textContent = "åœ§ç¸®å®Œäº†ï¼å‹•ç”»ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã§ãã¾ã™ã€‚";
-    } catch (error) {
-        console.error(error);
-        statusText.textContent = "ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚ãƒ•ã‚¡ã‚¤ãƒ«åã«ç‰¹æ®Šæ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚Šã¾ã™ã€‚";
-    }
+  // ˆ³k‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ğæ“¾
+  const outputBuffer = ffmpeg.FS('readFile', outputFileName);
+  const outputBlob = new Blob([outputBuffer], { type: 'video/mp4' });
+
+  // ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ª 10MB ˆÈ‰º‚É‚È‚é‚©Šm”F
+  if (outputBlob.size <= 10 * 1024 * 1024) {
+    status.textContent = 'ˆ³kŠ®—¹I';
+    const outputUrl = URL.createObjectURL(outputBlob);
+    outputVideo.src = outputUrl;
+    downloadLink.href = outputUrl;
+    downloadLink.textContent = 'ˆ³k“®‰æ‚ğƒ_ƒEƒ“ƒ[ƒh';
+    downloadLink.style.display = 'block';
+  } else {
+    status.textContent = 'ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ª 10MB ‚ğ’´‚¦‚Ä‚¢‚Ü‚·BƒrƒbƒgƒŒ[ƒg‚ğ’²®‚µ‚Ä‚­‚¾‚³‚¢B';
+  }
+}
+
+compressButton.addEventListener('click', () => {
+  const file = videoInput.files[0];
+  if (file) {
+    compressVideo(file);
+  } else {
+    alert('“®‰æƒtƒ@ƒCƒ‹‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B');
+  }
 });
+
+// ƒy[ƒW“Ç‚İ‚İ‚É ffmpeg.wasm ‚ğƒ[ƒh
+window.onload = loadFFmpeg;

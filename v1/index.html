@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動画圧縮ツール</title>
+<link rel="stylesheet" href="style.css">
+<!-- ffmpeg.wasmの読み込み (CDN経由) -->
+<script src="coi-serviceworker.js"></script>
+<script src="ffmpeg-core.js"></script>
+<script src="ffmpeg.min.js"></script>
+<script src="script.js" defer></script>
+</head>
+<body>
+
+<h1>動画を10MBまで圧縮するツール</h1>
+<input type="file" id="inputVideo" accept="video/*">
+<button id="compressButton">圧縮開始</button>
+<p id="status"></p>
+<video id="outputVideo" controls></video>
+<a id="downloadLink" download="compressed.mp4" style="display: none;">圧縮された動画をダウンロード</a>
+
+
+</body>
+</html>
