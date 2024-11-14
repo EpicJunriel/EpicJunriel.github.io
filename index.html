@@ -27,18 +27,34 @@
   <br><br>
   <div id="compressedInfo"></div>
   <button id="downloadBtn" style="display: none;">圧縮された動画をダウンロード</button>
-  
+  <br><br>
+  <div id="logContainer" style="max-height: 300px; overflow-y: auto; background: #f0f0f0; padding: 10px; border: 1px solid #ccc;">
+    <h3>ログ出力</h3>
+    <pre id="logOutput"></pre>
+  </div>
+
   <script>
     let ffmpeg;
 
     // ffmpeg.wasm の初期化
     async function initFFmpeg() {
-      ffmpeg = await FFmpeg.createFFmpeg({ log: true, progress: (p) => {
-        const progressBar = document.getElementById('progressBar');
-        if (p.ratio) {
-          progressBar.value = Math.round(p.ratio * 100);
+      ffmpeg = await FFmpeg.createFFmpeg({
+        log: true,
+        progress: (p) => {
+          const progressBar = document.getElementById('progressBar');
+          if (p.ratio) {
+            progressBar.value = Math.round(p.ratio * 100);
+          }
         }
-      } });
+      });
+
+      // ログの表示設定
+      ffmpeg.setLogger(({ type, message }) => {
+        const logOutput = document.getElementById('logOutput');
+        logOutput.textContent += `[${type}] ${message}\n`;
+        logOutput.scrollTop = logOutput.scrollHeight; // 自動スクロール
+      });
+
       await ffmpeg.load();
     }
 
@@ -63,7 +79,6 @@
         <p>ファイルサイズ: ${(file.size / (1024 * 1024)).toFixed(2)} MB</p>
       `;
 
-      // サムネイル表示
       const video = document.createElement('video');
       video.src = url;
       video.currentTime = 1;
@@ -90,16 +105,13 @@
       // 動画を10MB程度に圧縮するコマンド
       await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '10M', 'output.mp4');
 
-      // 圧縮後のファイルサイズ取得
       const data = ffmpeg.FS('readFile', 'output.mp4');
       const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
       const url = URL.createObjectURL(videoBlob);
 
-      // 圧縮後の情報表示
       const compressedInfo = document.getElementById('compressedInfo');
       compressedInfo.innerHTML = `<p>圧縮後のファイルサイズ: ${(videoBlob.size / (1024 * 1024)).toFixed(2)} MB</p>`;
 
-      // ダウンロードボタンの表示と設定
       const downloadBtn = document.getElementById('downloadBtn');
       downloadBtn.style.display = 'inline-block';
       downloadBtn.onclick = () => {
@@ -109,7 +121,6 @@
         a.click();
       };
 
-      // 進行度バーの非表示
       progressBar.style.display = 'none';
     }
 
