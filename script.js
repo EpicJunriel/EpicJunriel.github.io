@@ -8,11 +8,13 @@ const outputVideo = document.getElementById('outputVideo');
 const downloadLink = document.getElementById('downloadLink');
 
 let ffmpeg;
+let isFFmpegLoaded = false;  // ffmpegがロードされているかを確認するフラグ
 
 // ffmpeg の初期化
 async function loadFFmpeg() {
   ffmpeg = await initFFmpeg();
   await ffmpeg.load();
+  isFFmpegLoaded = true;  // ffmpegのロード完了フラグ
   updateStatus('ffmpeg.wasm 読み込み完了');
 }
 
@@ -28,6 +30,11 @@ function updateStatus(message) {
 
 // 動画圧縮関数
 async function compressVideo(file) {
+  if (!isFFmpegLoaded) {
+    updateStatus('ffmpeg.wasm がロードされていません。');
+    return;  // ffmpegがロードされていない場合、処理を中断
+  }
+
   updateStatus('圧縮中...お待ちください');
 
   const inputFileName = 'input.mp4';
