@@ -4,24 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Junnie's Video Compressor™</title>
-  
+
   <!-- COOPとCOEPの設定 -->
   <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
   <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
   <script src="coi-serviceworker.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@latest/dist/ffmpeg.min.js"></script>
+
+  <!-- スタイルシートのリンク -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>Junnie's Video Compressor™</h1>
 
   <p>動画を低ファイルサイズに圧縮します。処理はすべてローカルで実行されます！</p>
-  
+
+  <!-- ファイル選択ボタン -->
+  <label class="label-file" for="upload">ファイルを選択</label>
   <input type="file" id="upload" accept="video/*" />
+
+  <!-- ファイル名表示 -->
+  <p id="fileName"></p>
+
   <br><br>
+  <!-- 圧縮開始ボタン -->
   <button id="compressBtn" disabled>圧縮開始</button>
+
   <br><br>
-  <a id="downloadLink" href="#" download="compressed_video.mp4" style="display:none">ダウンロード</a>
-  
+  <!-- 進行状況バー -->
+  <div id="progressWrapper">
+    <div id="progressBar">0%</div>
+  </div>
+
+  <br><br>
+  <!-- ダウンロードリンク -->
+  <a id="downloadLink" href="#" download="compressed_video.mp4" style="display:none">
+    <img src="thumbnail.jpg" alt="動画サムネイル">
+    圧縮された動画をダウンロード
+  </a>
+
   <script>
     let ffmpeg;
 
@@ -37,6 +58,7 @@
       if (file) {
         document.getElementById('compressBtn').disabled = false;
         document.getElementById('compressBtn').onclick = () => compressVideo(file);
+        document.getElementById('fileName').textContent = '選択されたファイル: ' + file.name;
       }
     });
 
@@ -45,6 +67,14 @@
       // ファイルをffmpegに入力する
       const fileName = file.name;
       await ffmpeg.FS('writeFile', fileName, new Uint8Array(await file.arrayBuffer()));
+
+      // 圧縮中の進行状況を更新
+      ffmpeg.setProgress(progress => {
+        const percent = progress.ratio * 100;
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = percent + '%';
+        progressBar.textContent = Math.round(percent) + '%';
+      });
 
       // 動画を10MB程度に圧縮するコマンド
       await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '10M', 'output.mp4');
