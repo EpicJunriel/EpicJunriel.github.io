@@ -1,78 +1,63 @@
-
-<html>
+<!DOCTYPE html>
+<html lang="ja">
 <head>
-  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.8.3/dist/ffmpeg.min.js"></script>
-  <style>
-    html,
-    body {
-      margin: 0;
-      width: 100%;
-      height: 100%
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>動画圧縮ツール</title>
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@latest"></script>
 </head>
-
 <body>
-  <h3>Upload a video to transcode to mp4 (x264) and play!</h3>
-  <video id="output-video" controls muted autoplay></video><br />
-  <br>
-  <input type="file" id="uploader">
-  <p id="message"></p>
-  <br>
+  <h1>動画圧縮ツール</h1>
 
-  <div>
-    <textarea id='log' rows=30 cols=100 autofocus></textarea>
-  </div>
-
-  <br>
+  <p>動画をアップロードし、圧縮された動画をダウンロードできます。</p>
+  
+  <input type="file" id="upload" accept="video/*" />
+  <br><br>
+  <button id="compressBtn" disabled>圧縮開始</button>
+  <br><br>
+  <a id="downloadLink" href="#" download="compressed_video.mp4" style="display:none">ダウンロード</a>
+  
   <script>
-    var txt = document.getElementById('log');
-    const {
-      createFFmpeg
-    } = FFmpeg;
-    const ffmpeg = createFFmpeg({
-      log: true,
-      logger: ({
-        message
-      }) => {
-        txt.value += "\n" + message;
+    let ffmpeg;
+
+    // ffmpeg.wasm の初期化
+    async function initFFmpeg() {
+      ffmpeg = await FFmpeg.createFFmpeg({ log: true });
+      await ffmpeg.load();
+    }
+
+    // ファイルアップロード処理
+    document.getElementById('upload').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        document.getElementById('compressBtn').disabled = false;
+        document.getElementById('compressBtn').onclick = () => compressVideo(file);
       }
     });
 
-    const transcode = async ({
-      target: {
-        files
-      }
-    }) => {
-      const message = document.getElementById('message');
-      const {
-        name
-      } = files[0];
-      message.innerHTML = 'Loading ffmpeg-core.js';
-      await ffmpeg.load();
-      await ffmpeg.write(name, files[0]);
-      message.innerHTML = 'Start transcoding';
-      await ffmpeg.transcode(name, 'output.mp4');
-      message.innerHTML = 'Transcoding completed';
-      const data = ffmpeg.read('output.mp4');
-      ffmpeg.remove('output.mp4');
+    // 動画圧縮処理
+    async function compressVideo(file) {
+      // ファイルをffmpegに入力する
+      const fileName = file.name;
+      await ffmpeg.FS('writeFile', fileName, new Uint8Array(await file.arrayBuffer()));
 
-      const video = document.getElementById('output-video');
-      video.src = URL.createObjectURL(new Blob([data.buffer], {
-        type: 'video/mp4'
-      }));
+      // 動画を10MB程度に圧縮するコマンド
+      await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '10M', 'output.mp4');
 
+      // 圧縮後のファイルをダウンロード可能にする
+      const data = ffmpeg.FS('readFile', 'output.mp4');
+      const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
+      const url = URL.createObjectURL(videoBlob);
 
+      // ダウンロードリンクを表示
+      const downloadLink = document.getElementById('downloadLink');
+      downloadLink.href = url;
+      downloadLink.style.display = 'inline-block';
+      downloadLink.textContent = '圧縮された動画をダウンロード';
     }
-    const elm = document.getElementById('uploader');
-    elm.addEventListener('change', transcode);
+
+    // 初期化
+    initFFmpeg();
   </script>
 </body>
-
 </html>
