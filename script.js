@@ -1,4 +1,4 @@
-// ffmpeg.wasm ‚Ìƒ[ƒh
+// ffmpeg.wasm ã®ãƒ­ãƒ¼ãƒ‰
 import initFFmpeg from 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.1/dist/ffmpeg.min.js';
 
 const videoInput = document.getElementById('videoInput');
@@ -12,42 +12,42 @@ let ffmpeg;
 async function loadFFmpeg() {
   ffmpeg = await initFFmpeg();
   await ffmpeg.load();
-  status.textContent = 'ffmpeg.wasm “Ç‚İ‚İŠ®—¹';
+  status.textContent = 'ffmpeg.wasm èª­ã¿è¾¼ã¿å®Œäº†';
 }
 
 async function compressVideo(file) {
-  status.textContent = 'ˆ³k’†...‚¨‘Ò‚¿‚­‚¾‚³‚¢';
+  status.textContent = 'åœ§ç¸®ä¸­...ãŠå¾…ã¡ãã ã•ã„';
 
-  // “ü—Íƒtƒ@ƒCƒ‹‚ğ ffmpeg ‚Éƒ[ƒh
+  // å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ ffmpeg ã«ãƒ­ãƒ¼ãƒ‰
   const inputFileName = 'input.mp4';
   const outputFileName = 'output.mp4';
   const inputBuffer = await file.arrayBuffer();
 
   ffmpeg.FS('writeFile', inputFileName, new Uint8Array(inputBuffer));
 
-  // ffmpeg ƒRƒ}ƒ“ƒh‚Å“®‰æ‚ğˆ³k
+  // ffmpeg ã‚³ãƒãƒ³ãƒ‰ã§å‹•ç”»ã‚’åœ§ç¸®
   await ffmpeg.run(
     '-i', inputFileName,
-    '-b:v', '500k', // ƒrƒbƒgƒŒ[ƒgw’è
+    '-b:v', '500k', // ãƒ“ãƒƒãƒˆãƒ¬ãƒ¼ãƒˆæŒ‡å®š
     '-preset', 'fast',
     '-movflags', 'faststart',
     outputFileName
   );
 
-  // ˆ³k‚³‚ê‚½ƒtƒ@ƒCƒ‹‚ğæ“¾
+  // åœ§ç¸®ã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’å–å¾—
   const outputBuffer = ffmpeg.FS('readFile', outputFileName);
   const outputBlob = new Blob([outputBuffer], { type: 'video/mp4' });
 
-  // ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ª 10MB ˆÈ‰º‚É‚È‚é‚©Šm”F
+  // ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºãŒ 10MB ä»¥ä¸‹ã«ãªã‚‹ã‹ç¢ºèª
   if (outputBlob.size <= 10 * 1024 * 1024) {
-    status.textContent = 'ˆ³kŠ®—¹I';
+    status.textContent = 'åœ§ç¸®å®Œäº†ï¼';
     const outputUrl = URL.createObjectURL(outputBlob);
     outputVideo.src = outputUrl;
     downloadLink.href = outputUrl;
-    downloadLink.textContent = 'ˆ³k“®‰æ‚ğƒ_ƒEƒ“ƒ[ƒh';
+    downloadLink.textContent = 'åœ§ç¸®å‹•ç”»ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰';
     downloadLink.style.display = 'block';
   } else {
-    status.textContent = 'ƒtƒ@ƒCƒ‹ƒTƒCƒY‚ª 10MB ‚ğ’´‚¦‚Ä‚¢‚Ü‚·BƒrƒbƒgƒŒ[ƒg‚ğ’²®‚µ‚Ä‚­‚¾‚³‚¢B';
+    status.textContent = 'ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºãŒ 10MB ã‚’è¶…ãˆã¦ã„ã¾ã™ã€‚ãƒ“ãƒƒãƒˆãƒ¬ãƒ¼ãƒˆã‚’èª¿æ•´ã—ã¦ãã ã•ã„ã€‚';
   }
 }
 
@@ -56,9 +56,9 @@ compressButton.addEventListener('click', () => {
   if (file) {
     compressVideo(file);
   } else {
-    alert('“®‰æƒtƒ@ƒCƒ‹‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B');
+    alert('å‹•ç”»ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚');
   }
 });
 
-// ƒy[ƒW“Ç‚İ‚İ‚É ffmpeg.wasm ‚ğƒ[ƒh
+// ãƒšãƒ¼ã‚¸èª­ã¿è¾¼ã¿æ™‚ã« ffmpeg.wasm ã‚’ãƒ­ãƒ¼ãƒ‰
 window.onload = loadFFmpeg;
