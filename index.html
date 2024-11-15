@@ -45,28 +45,20 @@
         }
       });
 
-      // ログの自動スクロールを有効にする関数
       function enableAutoScroll() {
         const logOutput = document.getElementById('logOutput');
-
-        // MutationObserver を使用してログの変更を監視
         const observer = new MutationObserver(() => {
           logOutput.scrollTop = logOutput.scrollHeight;
         });
-
-        // 監視設定：子ノードの変更を監視
         observer.observe(logOutput, { childList: true });
       }
 
-      // ffmpeg のログ出力設定
       ffmpeg.setLogger(({ type, message }) => {
         const logOutput = document.getElementById('logOutput');
         logOutput.textContent += `[${type}] ${message}\n`;
       });
 
-      // 自動スクロールを有効にする
       enableAutoScroll();
-
       await ffmpeg.load();
     }
 
@@ -114,11 +106,13 @@
       progressBar.style.display = 'block';
       progressBar.value = 0;
 
-      const fileName = file.name;
-      const outputFileName = getOutputFileName(fileName);
-      await ffmpeg.FS('writeFile', fileName, new Uint8Array(await file.arrayBuffer()));
+      const tempInputFileName = 'temp_input.mp4';
+      const outputFileName = getOutputFileName(file.name);
 
-      await ffmpeg.run('-i', fileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '8M', outputFileName);
+      // **空白を含むファイル名に対応するために、一時ファイル名を使用**
+      await ffmpeg.FS('writeFile', tempInputFileName, new Uint8Array(await file.arrayBuffer()));
+
+      await ffmpeg.run('-i', tempInputFileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '8M', outputFileName);
 
       const data = ffmpeg.FS('readFile', outputFileName);
       const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
@@ -139,6 +133,9 @@
       };
 
       progressBar.style.display = 'none';
+
+      // **一時ファイルを削除**
+      ffmpeg.FS('unlink', tempInputFileName);
     }
 
     initFFmpeg();
