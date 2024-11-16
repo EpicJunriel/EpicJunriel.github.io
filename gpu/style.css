@@ -1,61 +1,62 @@
 /* style.css */
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Arial', sans-serif;
-}
-
-body {
-  background: #1a1a1a;
-  color: #f0f0f0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-}
-
-.container {
-  max-width: 600px;
-  width: 100%;
-  padding: 20px;
-  background: #2a2a2a;
-  border-radius: 8px;
-}
-
-h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-.description {
-  margin-bottom: 20px;
-  text-align: center;
-  color: #cccccc;
-  font-size: 14px;
-}
-
-.file-input, .btn, .download-btn {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-}
-
-.progress-bar {
-  width: 100%;
-  margin-top: 10px;
-  height: 10px;
-  border-radius: 5px;
-}
-
-.log-container {
-  margin-top: 20px;
-  padding: 10px;
-  background: #1a1a1a;
-  border-radius: 4px;
-}
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  body {
+    background: #1a1a1a;
+    color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .container {
+    max-width: 600px;
+    width: 100%;
+    padding: 20px;
+    background: #2a2a2a;
+    border-radius: 8px;
+  }
+  
+  h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .description {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #cccccc;
+    font-size: 14px;
+  }
+  
+  .file-input, .btn, .download-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .progress-bar {
+    width: 100%;
+    margin-top: 10px;
+    height: 10px;
+    border-radius: 5px;
+  }
+  
+  .log-container {
+    margin-top: 20px;
+    padding: 10px;
+    background: #1a1a1a;
+    border-radius: 4px;
+  }
+  
