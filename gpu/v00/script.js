@@ -6,53 +6,53 @@ let videoFile;
 
 input.addEventListener('change', (event) => {
   videoFile = event.target.files[0];
-  console.log(`“®‰æƒtƒ@ƒCƒ‹‚ª‘I‘ð‚³‚ê‚Ü‚µ‚½: ${videoFile.name}`);
-  status.textContent = `ƒXƒe[ƒ^ƒX: ${videoFile.name} ‚ð“Ç‚Ýž‚Ý’†`;
+  console.log(`å‹•ç”»ãƒ•ã‚¡ã‚¤ãƒ«ãŒé¸æŠžã•ã‚Œã¾ã—ãŸ: ${videoFile.name}`);
+  status.textContent = `ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹: ${videoFile.name} ã‚’èª­ã¿è¾¼ã¿ä¸­`;
 });
 
 document.getElementById('convert').addEventListener('click', async () => {
   if (!videoFile) {
-    console.error("“®‰æƒtƒ@ƒCƒ‹‚ª‘I‘ð‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
-    alert("“®‰æƒtƒ@ƒCƒ‹‚ð‘I‘ð‚µ‚Ä‚­‚¾‚³‚¢B");
+    console.error("å‹•ç”»ãƒ•ã‚¡ã‚¤ãƒ«ãŒé¸æŠžã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
+    alert("å‹•ç”»ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠžã—ã¦ãã ã•ã„ã€‚");
     return;
   }
 
   try {
     await convertToMP4(videoFile);
   } catch (error) {
-    console.error("•ÏŠ·’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½:", error);
-    status.textContent = "ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½BÚ×‚ÍƒRƒ“ƒ\[ƒ‹‚ðŠm”F‚µ‚Ä‚­‚¾‚³‚¢B";
+    console.error("å¤‰æ›ä¸­ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ:", error);
+    status.textContent = "ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚è©³ç´°ã¯ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã‚’ç¢ºèªã—ã¦ãã ã•ã„ã€‚";
   }
 });
 
 async function convertToMP4(file) {
-  console.log("MP4‚Ö‚Ì•ÏŠ·‚ðŠJŽn‚µ‚Ü‚·...");
-  status.textContent = "MP4‚Ö‚Ì•ÏŠ·‚ðŠJŽn‚µ‚Ü‚·...";
+  console.log("MP4ã¸ã®å¤‰æ›ã‚’é–‹å§‹ã—ã¾ã™...");
+  status.textContent = "MP4ã¸ã®å¤‰æ›ã‚’é–‹å§‹ã—ã¾ã™...";
 
   const videoBuffer = await file.arrayBuffer();
   const videoDecoder = new VideoDecoder({
     output: handleDecodedFrame,
-    error: (e) => console.error("ƒfƒR[ƒhƒGƒ‰[:", e),
+    error: (e) => console.error("ãƒ‡ã‚³ãƒ¼ãƒ‰ã‚¨ãƒ©ãƒ¼:", e),
   });
 
   try {
     videoDecoder.configure({ codec: 'vp8' });
-    console.log("ƒfƒR[ƒ_[‚ª\¬‚³‚ê‚Ü‚µ‚½: codec = 'vp8'");
+    console.log("ãƒ‡ã‚³ãƒ¼ãƒ€ãƒ¼ãŒæ§‹æˆã•ã‚Œã¾ã—ãŸ: codec = 'vp8'");
   } catch (error) {
-    console.error("ƒR[ƒfƒbƒN‚ª”ñ‘Î‰ž‚Å‚·:", error);
-    status.textContent = "ƒR[ƒfƒbƒN‚ª”ñ‘Î‰ž‚Å‚·B•ÏŠ·‚ð’†Ž~‚µ‚Ü‚·B";
+    console.error("ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ãŒéžå¯¾å¿œã§ã™:", error);
+    status.textContent = "ã‚³ãƒ¼ãƒ‡ãƒƒã‚¯ãŒéžå¯¾å¿œã§ã™ã€‚å¤‰æ›ã‚’ä¸­æ­¢ã—ã¾ã™ã€‚";
     return;
   }
 
   const init = { type: 'key', data: videoBuffer };
   videoDecoder.decode(init);
 
-  console.log("“®‰æ‚ÌƒfƒR[ƒh‚ðŠJŽn‚µ‚Ü‚µ‚½B");
-  status.textContent = "“®‰æ‚ÌƒfƒR[ƒh’†...";
+  console.log("å‹•ç”»ã®ãƒ‡ã‚³ãƒ¼ãƒ‰ã‚’é–‹å§‹ã—ã¾ã—ãŸã€‚");
+  status.textContent = "å‹•ç”»ã®ãƒ‡ã‚³ãƒ¼ãƒ‰ä¸­...";
 
   const videoEncoder = new VideoEncoder({
     output: handleEncodedChunk,
-    error: (e) => console.error("ƒGƒ“ƒR[ƒhƒGƒ‰[:", e),
+    error: (e) => console.error("ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã‚¨ãƒ©ãƒ¼:", e),
   });
 
   videoEncoder.configure({
@@ -66,26 +66,26 @@ async function convertToMP4(file) {
   const chunks = [];
 
   async function handleDecodedFrame(frame) {
-    console.log("ƒtƒŒ[ƒ€‚ªƒfƒR[ƒh‚³‚ê‚Ü‚µ‚½:", frame);
+    console.log("ãƒ•ãƒ¬ãƒ¼ãƒ ãŒãƒ‡ã‚³ãƒ¼ãƒ‰ã•ã‚Œã¾ã—ãŸ:", frame);
     decodedFrames.push(frame);
     videoEncoder.encode(frame);
     frame.close();
   }
 
   async function handleEncodedChunk(chunk) {
-    console.log("ƒ`ƒƒƒ“ƒN‚ªƒGƒ“ƒR[ƒh‚³‚ê‚Ü‚µ‚½:", chunk);
+    console.log("ãƒãƒ£ãƒ³ã‚¯ãŒã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚Œã¾ã—ãŸ:", chunk);
     chunks.push(chunk);
   }
 
   videoEncoder.flush().then(async () => {
-    console.log("ƒGƒ“ƒR[ƒh‚ªŠ®—¹‚µ‚Ü‚µ‚½BMP4ƒtƒ@ƒCƒ‹‚ðì¬’†...");
+    console.log("ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ãŒå®Œäº†ã—ã¾ã—ãŸã€‚MP4ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆä¸­...");
     const mp4Blob = new Blob(chunks, { type: 'video/mp4' });
     const url = URL.createObjectURL(mp4Blob);
     preview.src = url;
-    status.textContent = "•ÏŠ·‚ªŠ®—¹‚µ‚Ü‚µ‚½BƒvƒŒƒrƒ…[‚ªÄ¶‰Â”\‚Å‚·B";
-    console.log("MP4ƒtƒ@ƒCƒ‹‚Ìì¬‚ªŠ®—¹‚µ‚Ü‚µ‚½B");
+    status.textContent = "å¤‰æ›ãŒå®Œäº†ã—ã¾ã—ãŸã€‚ãƒ—ãƒ¬ãƒ“ãƒ¥ãƒ¼ãŒå†ç”Ÿå¯èƒ½ã§ã™ã€‚";
+    console.log("MP4ãƒ•ã‚¡ã‚¤ãƒ«ã®ä½œæˆãŒå®Œäº†ã—ã¾ã—ãŸã€‚");
   }).catch((error) => {
-    console.error("ƒGƒ“ƒR[ƒhŠ®—¹Žž‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½:", error);
-    status.textContent = "ƒGƒ“ƒR[ƒh’†‚ÉƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½B";
+    console.error("ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰å®Œäº†æ™‚ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ:", error);
+    status.textContent = "ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ä¸­ã«ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚";
   });
 }
