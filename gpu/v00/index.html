@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動画形式変換 (WebCodecs API)</title>
+</head>
+<body>
+  <h1>WebCodecs APIで動画をMP4に変換</h1>
+  <input type="file" id="input-video" accept="video/*">
+  <button id="convert">変換開始</button>
+  <video id="preview" controls></video>
+  <p id="status">ステータス: 待機中</p>
+
+  <script>
+    const input = document.getElementById('input-video');
+    const preview = document.getElementById('preview');
+    const status = document.getElementById('status');
+    let decodedFrames = [];
+    let videoFile;
+
+    input.addEventListener('change', (event) => {
+      videoFile = event.target.files[0];
+      console.log(`動画ファイルが選択されました: ${videoFile.name}`);
+      status.textContent = `ステータス: ${videoFile.name} を読み込み中`;
+    });
+
+    document.getElementById('convert').addEventListener('click', async () => {
+      if (!videoFile) {
+        console.error("動画ファイルが選択されていません。");
+        alert("動画ファイルを選択してください。");
+        return;
+      }
+
+      try {
+        await convertToMP4(videoFile);
+      } catch (error) {
+        console.error("変換中にエラーが発生しました:", error);
+        status.textContent = "エラーが発生しました。詳細はコンソールを確認してください。";
+      }
+    });
+
+    async function convertToMP4(file) {
+      console.log("MP4への変換を開始します...");
+      status.textContent = "MP4への変換を開始します...";
+
+      const videoBuffer = await file.arrayBuffer();
+      const videoDecoder = new VideoDecoder({
+        output: handleDecodedFrame,
+        error: (e) => console.error("デコードエラー:", e),
+      });
+
+      // コーデック情報の取得
+      const codecConfig = {
+        codec: 'vp8', // とりあえずvp8に設定（後で変更可能）
+      };
+
+      try {
+        videoDecoder.configure(codecConfig);
+        console.log("デコーダーが構成されました:", codecConfig);
+      } catch (error) {
+        console.error("コーデックが非対応です:", error);
+        status.textContent = "コーデックが非対応です。変換を中止します。";
+        return;
+      }
+
+      // 初期化データを使用してデコード開始
+      const init = { type: 'key', data: videoBuffer };
+      videoDecoder.decode(init);
+
+      console.log("動画のデコードを開始しました。");
+      status.textContent = "動画のデコード中...";
+
+      async function handleDecodedFrame(frame) {
+        console.log("フレームがデコードされました:", frame);
+        decodedFrames.push(frame);
+      }
+    }
+  </script>
+</body>
+</html>
