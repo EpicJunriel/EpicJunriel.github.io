@@ -35,17 +35,21 @@ document.getElementById('upload').addEventListener('change', async (event) => {
       framerate: 30
     });
   
+    let timestamp = 0;
+    const frameDuration = 1000 / 30; // 30fps の場合、1フレームあたりの持続時間（ミリ秒）
+  
     while (video.currentTime < video.duration) {
       // canvas にフレームを描画
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   
-      // **ImageBitmap を作成して VideoFrame に渡す**
+      // ImageBitmap を作成して VideoFrame に渡す
       const bitmap = await createImageBitmap(canvas);
-      const frame = new VideoFrame(bitmap);
+      const frame = new VideoFrame(bitmap, { timestamp });
   
       encoder.encode(frame);
       frame.close(); // メモリリークを防ぐために閉じる
   
+      timestamp += frameDuration;
       await new Promise(resolve => setTimeout(resolve, 100)); // フレームごとの待機
       progressBar.value = (video.currentTime / video.duration) * 100;
     }
