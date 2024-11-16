@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  #input-video {
+    margin-bottom: 10px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+  }
+  
+  #preview {
+    width: 80%;
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+  
+  #status {
+    font-weight: bold;
+    color: #555;
+  }
+  
