@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebCodecs 動画圧縮</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <h1>WebCodecs 動画圧縮</h1>
+    <p class="description">GPU アクセラレーションを使用して動画を圧縮します。</p>
+    
+    <input type="file" id="upload" accept="video/*" class="file-input" />
+    <div id="videoInfo" class="info"></div>
+    <button id="compressBtn" class="btn" disabled>圧縮開始</button>
+    <progress id="progressBar" value="0" max="100" class="progress-bar"></progress>
+    <button id="downloadBtn" class="download-btn" style="display: none;">ダウンロード</button>
+    
+    <div id="logContainer" class="log-container">
+      <h3>出力ログ</h3>
+      <pre id="logOutput"></pre>
+    </div>
+  </div>
+</body>
+</html>
