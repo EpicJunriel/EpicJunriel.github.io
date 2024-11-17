@@ -1,5 +1,6 @@
 /* style.css */
 
+/* 基本スタイル */
 * {
     margin: 0;
     padding: 0;
@@ -48,13 +49,6 @@
     margin-top: 10px;
   }
   
-  .progress-bar {
-    width: 100%;
-    margin-top: 10px;
-    height: 20px;
-    display: block;
-  }
-  
   .info {
     margin-top: 10px;
     text-align: center;
@@ -78,5 +72,34 @@
   pre {
     white-space: pre-wrap;
     word-wrap: break-word;
+  }
+  
+  /* 虹色に光る進行度バー */
+  @keyframes rainbow {
+    0% { background-color: red; }
+    16% { background-color: orange; }
+    33% { background-color: yellow; }
+    50% { background-color: green; }
+    66% { background-color: blue; }
+    83% { background-color: indigo; }
+    100% { background-color: violet; }
+  }
+  
+  .progress-bar {
+    width: 100%;
+    margin-top: 10px;
+    height: 20px;
+    border-radius: 5px;
+    animation: rainbow 3s linear infinite;
+    appearance: none;
+  }
+  
+  progress::-webkit-progress-bar {
+    background: transparent;
+  }
+  
+  progress::-webkit-progress-value {
+    border-radius: 5px;
+    animation: rainbow 3s linear infinite;
   }
   
