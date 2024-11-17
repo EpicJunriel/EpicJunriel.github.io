@@ -61,6 +61,13 @@ function displayVideoInfo(file) {
   });
 }
 
+// 出力ファイル名を生成する関数
+function getOutputFileName(inputFileName) {
+  const baseName = inputFileName.substring(0, inputFileName.lastIndexOf('.'));
+  const extension = inputFileName.substring(inputFileName.lastIndexOf('.'));
+  return `${baseName}_compressed${extension}`;
+}
+
 async function compressVideo(file) {
   const progressBar = document.getElementById('progressBar');
   progressBar.style.display = 'block';
