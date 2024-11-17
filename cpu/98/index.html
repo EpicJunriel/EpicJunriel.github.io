@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ローカル動画圧縮</title>
+  <meta property="og:title" content="ローカル動画圧縮 (v0.1-cpuonly-98)">
+  <meta property="og:description" content="ローカル処理によって動画をファイルサイズ10MB以下に収まるよう圧縮する、ffmpeg.wasmベースのWebアプリです。">
+  <meta property="og:image" content="og-image.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ローカル動画圧縮">
+  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+  <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+  <script src="coi-serviceworker.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@latest/dist/ffmpeg.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/98.css/dist/98.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="window">
+    <div class="title-bar">
+      <div class="title-bar-text">ローカル動画圧縮</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close"></button>
+      </div>
+    </div>
+    <div class="window-body">
+      <p class="description">動画ファイルを10MB程度に圧縮する処理をローカル環境で実行します。現状はCPU処理なのでかなり低速です。</p>
+
+      <input type="file" id="upload" accept="video/*" class="file-input">
+      <div id="videoInfo" class="info"></div>
+      <img id="thumbnail" class="thumbnail">
+
+      <button id="compressBtn" class="btn">圧縮開始</button>
+      <progress id="progressBar" value="0" max="100" class="progress-bar"></progress>
+
+      <div id="compressedInfo" class="info"></div>
+      <button id="downloadBtn" class="download-btn" style="display: none;">ダウンロード</button>
+
+      <div id="logContainer" class="log-container">
+        <h3>出力</h3>
+        <pre id="logOutput"></pre>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
