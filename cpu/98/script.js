@@ -5,7 +5,9 @@ async function initFFmpeg() {
     log: true,
     progress: (p) => {
       const progressBar = document.getElementById('progressBar');
-      if (p.ratio) progressBar.value = Math.round(p.ratio * 100);
+      if (p.ratio) {
+        progressBar.value = Math.round(p.ratio * 100);
+      }
     }
   });
 
@@ -57,12 +59,6 @@ function displayVideoInfo(file) {
     thumbnail.src = canvas.toDataURL('image/png');
     thumbnail.style.display = 'block';
   });
-}
-
-function getOutputFileName(inputFileName) {
-  const baseName = inputFileName.substring(0, inputFileName.lastIndexOf('.'));
-  const extension = inputFileName.substring(inputFileName.lastIndexOf('.'));
-  return `${baseName}_compressed${extension}`;
 }
 
 async function compressVideo(file) {
