@@ -74,7 +74,7 @@
     word-wrap: break-word;
   }
   
-  /* 虹色に光る進行度バー */
+  /* 虹色に光る進行部分のアニメーション */
   @keyframes rainbow {
     0% { background-color: red; }
     16% { background-color: orange; }
@@ -85,19 +85,22 @@
     100% { background-color: violet; }
   }
   
+  /* 進行度バーのスタイル */
   .progress-bar {
     width: 100%;
     height: 20px;
     border-radius: 5px;
     appearance: none;
-    display: none; /* 初期状態で非表示 */
+    display: none;
   }
   
+  /* 背景部分のスタイル */
   progress::-webkit-progress-bar {
     background: #e0e0e0;
     border-radius: 5px;
   }
   
+  /* 進行部分のスタイルとアニメーション */
   progress::-webkit-progress-value {
     border-radius: 5px;
     animation: rainbow 3s linear infinite;
