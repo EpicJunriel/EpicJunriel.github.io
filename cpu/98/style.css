@@ -16,6 +16,11 @@
     min-height: 100vh;
   }
   
+  .window {
+    width: 400px;
+    max-width: 90%;
+  }
+  
   .window-body {
     padding: 10px;
   }
@@ -46,6 +51,8 @@
   .progress-bar {
     width: 100%;
     margin-top: 10px;
+    height: 20px;
+    display: block;
   }
   
   .info {
