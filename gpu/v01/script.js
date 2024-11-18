@@ -75,7 +75,7 @@ async function convertToMP4(file) {
   });
 
   videoEncoder.configure({
-    codec: 'avc1.4D401F', // H.264 (AVCレベル3.1)
+    codec: 'avc1.42E01E', // H.264 (AVCレベル3.0)に変更
     width: 1280,
     height: 720,
     bitrate: 2_000_000,
@@ -136,7 +136,7 @@ function handleEncodedChunk(chunk) {
     addLog("エンコーダーが閉じられているため、チャンクの処理をスキップします。");
     return;
   }
-  addLog("チャンクがエンコードされました。");
+  addLog(`チャンクがエンコードされました。サイズ: ${chunk.byteLength}バイト`);
   chunks.push(chunk);
 }
 
