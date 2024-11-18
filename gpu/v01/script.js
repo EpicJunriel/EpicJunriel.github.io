@@ -114,10 +114,21 @@ async function convertToMP4(file) {
   }
 
   const mp4Blob = new Blob(chunks, { type: 'video/mp4' });
+  addLog(`作成されたMP4ファイルのサイズ: ${mp4Blob.size}バイト`);
+
+  if (mp4Blob.size === 0) {
+    addLog("MP4ファイルが空です。エンコードに失敗した可能性があります。");
+    status.textContent = "エンコードに失敗しました。";
+    return;
+  }
+
   const url = URL.createObjectURL(mp4Blob);
+  preview.srcObject = null;
   preview.src = url;
+  preview.load();
+  preview.play();
   status.textContent = "変換が完了しました。プレビューが再生可能です。";
-  addLog("MP4ファイルの作成が完了しました。");
+  addLog("MP4ファイルの作成が完了し、プレビューが設定されました。");
 }
 
 function handleEncodedChunk(chunk) {
