@@ -40,39 +40,47 @@ async function convertToMP4(file) {
   const track = videoTracks[0];
   const processor = new MediaStreamTrackProcessor({ track });
   const reader = processor.readable.getReader();
-  const videoDecoder = new VideoDecoder({
-    output: handleDecodedFrame,
-    error: (e) => console.error("デコードエラー:", e),
+  const videoEncoder = new VideoEncoder({
+    output: handleEncodedChunk,
+    error: (e) => console.error("エンコードエラー:", e),
   });
 
-  try {
-    videoDecoder.configure({ codec: 'vp8' });
-    console.log("デコーダーが構成されました: codec = 'vp8'");
-  } catch (error) {
-    console.error("コーデックが非対応です:", error);
-    status.textContent = "コーデックが非対応です。変換を中止します。";
-    return;
-  }
+  videoEncoder.configure({
+    codec: 'avc1.42E01E', // H.264
+    width: 1280,
+    height: 720,
+    bitrate: 2_000_000,
+    framerate: 30,
+  });
 
-  console.log("デコード処理を開始します...");
+  const chunks = [];
+
+  console.log("エンコード処理を開始します...");
   let readResult;
   while (!(readResult = await reader.read()).done) {
-    const chunk = readResult.value;
+    const frame = readResult.value;
     try {
-      videoDecoder.decode(chunk);
+      videoEncoder.encode(frame);
+      console.log("フレームがエンコードされました:", frame);
+      frame.close(); // メモリ解放
     } catch (error) {
-      console.error("デコード中にエラーが発生しました:", error);
+      console.error("エンコード中にエラーが発生しました:", error);
+      frame.close();
     }
   }
 
-  console.log("デコードが完了しました。");
-  status.textContent = "デコードが完了しました。";
-}
+  await videoEncoder.flush();
+  console.log("エンコードが完了しました。MP4ファイルを作成中...");
+  const mp4Blob = new Blob(chunks, { type: 'video/mp4' });
+  const url = URL.createObjectURL(mp4Blob);
+  preview.src = url;
+  status.textContent = "変換が完了しました。プレビューが再生可能です。";
+  console.log("MP4ファイルの作成が完了しました。");
 
-async function handleDecodedFrame(frame) {
-  console.log("フレームがデコードされました:", frame);
-  decodedFrames.push(frame);
-  frame.close(); // メモリ解放
+  function handleEncodedChunk(chunk) {
+    console.log("チャンクがエンコードされました:", chunk);
+    chunks.push(chunk);
+  }
 }
 
 async function fileToMediaStream(file) {
