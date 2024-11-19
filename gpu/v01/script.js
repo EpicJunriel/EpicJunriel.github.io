@@ -153,3 +153,76 @@ async function fileToMediaStream(file) {
   addLog("MediaStreamが取得されました。");
   return video.captureStream();
 }
+
+const downloadButton = document.getElementById('download-video');
+
+async function convertToMP4(file) {
+    addLog("MP4への変換を開始します...");
+    status.textContent = "MP4への変換を開始します...";
+
+    const mediaStream = await fileToMediaStream(file);
+    const videoTracks = mediaStream.getVideoTracks();
+    if (videoTracks.length === 0) {
+        addLog("動画トラックが見つかりませんでした。");
+        status.textContent = "動画トラックが見つかりませんでした。";
+        return;
+    }
+
+    const track = videoTracks[0];
+    const processor = new MediaStreamTrackProcessor({ track });
+    const reader = processor.readable.getReader();
+    const videoEncoder = new VideoEncoder({
+        output: handleEncodedChunk,
+        error: (e) => addLog(`エンコードエラー: ${e}`),
+    });
+
+    videoEncoder.configure({
+        codec: 'avc1.4D401F',
+        width: 1280,
+        height: 720,
+        bitrate: 2_000_000,
+        framerate: 30,
+    });
+
+    addLog("エンコード処理を開始します...");
+
+    let readResult;
+    while (!(readResult = await reader.read()).done) {
+        const frame = readResult.value;
+        if (isEncoderClosed) {
+            frame.close();
+            continue;
+        }
+        try {
+            videoEncoder.encode(frame);
+            frame.close();
+        } catch (error) {
+            frame.close();
+            break;
+        }
+    }
+
+    await videoEncoder.flush();
+    isEncoderClosed = true;
+    videoEncoder.close();
+
+    const mp4Blob = new Blob(chunks, { type: 'video/mp4' });
+    if (mp4Blob.size === 0) {
+        status.textContent = "エンコードに失敗しました。";
+        return;
+    }
+
+    const url = URL.createObjectURL(mp4Blob);
+    preview.src = url;
+    preview.play();
+    status.textContent = "変換が完了しました。";
+    downloadButton.style.display = 'block';
+
+    downloadButton.addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'converted_video.mp4';
+        link.click();
+        addLog("MP4ファイルがダウンロードされました。");
+    });
+}
