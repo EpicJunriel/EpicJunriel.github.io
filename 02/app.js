@@ -3,10 +3,10 @@ const ffmpeg = createFFmpeg({ log: true });
 const logArea = document.getElementById('log-area');
 
 async function loadFFmpeg() {
-    logArea.textContent = 'ffmpeg-core‚ğƒ[ƒh’†...\n';
+    logArea.textContent = 'ffmpeg-coreã‚’ãƒ­ãƒ¼ãƒ‰ä¸­...\n';
     await ffmpeg.load();
     document.getElementById('checkmark').style.display = 'inline';
-    logArea.textContent += 'ffmpeg-core‚Ìƒ[ƒh‚ªŠ®—¹‚µ‚Ü‚µ‚½B\n';
+    logArea.textContent += 'ffmpeg-coreã®ãƒ­ãƒ¼ãƒ‰ãŒå®Œäº†ã—ã¾ã—ãŸã€‚\n';
     enableControls();
 }
 
@@ -22,13 +22,13 @@ function enableControls() {
 document.getElementById('encode-btn').addEventListener('click', async () => {
     const fileInput = document.getElementById('video-input').files[0];
     if (!fileInput) {
-        logArea.textContent += 'ƒGƒ‰[: “®‰æƒtƒ@ƒCƒ‹‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢B\n';
+        logArea.textContent += 'ã‚¨ãƒ©ãƒ¼: å‹•ç”»ãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠã—ã¦ãã ã•ã„ã€‚\n';
         return;
     }
 
     const targetSizeMB = parseFloat(document.getElementById('target-size').value);
     if (!targetSizeMB || targetSizeMB <= 0) {
-        logArea.textContent += 'ƒGƒ‰[: —LŒø‚È–Ú•Wƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B\n';
+        logArea.textContent += 'ã‚¨ãƒ©ãƒ¼: æœ‰åŠ¹ãªç›®æ¨™ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚\n';
         return;
     }
 
@@ -41,7 +41,7 @@ document.getElementById('encode-btn').addEventListener('click', async () => {
         const duration = await getVideoDuration('input.mp4');
         const targetBitrate = calculateBitrate(targetSizeMB, duration);
 
-        logArea.textContent += `–Ú•WƒrƒbƒgƒŒ[ƒg: ${targetBitrate}kbps\n`;
+        logArea.textContent += `ç›®æ¨™ãƒ“ãƒƒãƒˆãƒ¬ãƒ¼ãƒˆ: ${targetBitrate}kbps\n`;
 
         if (twoPass) {
             await runTwoPassEncode(targetBitrate, framerate, resolution);
@@ -53,14 +53,14 @@ document.getElementById('encode-btn').addEventListener('click', async () => {
         const blob = new Blob([outputData.buffer], { type: 'video/mp4' });
         const url = URL.createObjectURL(blob);
         downloadFile(url, 'output.mp4');
-        logArea.textContent += 'ƒGƒ“ƒR[ƒh‚ªŠ®—¹‚µ‚Ü‚µ‚½B\n';
+        logArea.textContent += 'ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ãŒå®Œäº†ã—ã¾ã—ãŸã€‚\n';
     } catch (error) {
-        logArea.textContent += `ƒGƒ‰[: ${error.message}\n`;
+        logArea.textContent += `ã‚¨ãƒ©ãƒ¼: ${error.message}\n`;
     }
 });
 
 async function getVideoDuration(file) {
-    // ffmpeg‚Å“®‰æ‚Ì’·‚³‚ğæ“¾i‰¼À‘•j
+    // ffmpegã§å‹•ç”»ã®é•·ã•ã‚’å–å¾—ï¼ˆä»®å®Ÿè£…ï¼‰
     await ffmpeg.run('-i', file);
     const logs = ffmpeg.logOutput || '';
     const match = logs.match(/Duration: (\d{2}):(\d{2}):(\d{2}\.\d+)/);
@@ -70,12 +70,12 @@ async function getVideoDuration(file) {
         const seconds = parseFloat(match[3]);
         return hours * 3600 + minutes * 60 + seconds;
     }
-    throw new Error('“®‰æ‚Ì’·‚³‚ğæ“¾‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½');
+    throw new Error('å‹•ç”»ã®é•·ã•ã‚’å–å¾—ã§ãã¾ã›ã‚“ã§ã—ãŸ');
 }
 
 function calculateBitrate(targetSizeMB, durationSeconds) {
-    const targetSizeBits = targetSizeMB * 8 * 1024 * 1024; // MB‚ğƒrƒbƒg‚É•ÏŠ·
-    return Math.floor(targetSizeBits / durationSeconds / 1000); // kbps‚É•ÏŠ·
+    const targetSizeBits = targetSizeMB * 8 * 1024 * 1024; // MBã‚’ãƒ“ãƒƒãƒˆã«å¤‰æ›
+    return Math.floor(targetSizeBits / durationSeconds / 1000); // kbpsã«å¤‰æ›
 }
 
 async function runSinglePassEncode(bitrate, framerate, resolution) {
@@ -124,8 +124,8 @@ function downloadFile(url, filename) {
     a.click();
 }
 
-// ƒo[ƒWƒ‡ƒ“•\¦
-document.getElementById('version').textContent = Math.random().toString(36).substr(2, 8);
+// ãƒãƒ¼ã‚¸ãƒ§ãƒ³è¡¨ç¤º
+// document.getElementById('version').textContent = Math.random().toString(36).substr(2, 8);
 
-// ffmpeg‚Ìƒ[ƒhŠJn
+// ffmpegã®ãƒ­ãƒ¼ãƒ‰é–‹å§‹
 loadFFmpeg();
