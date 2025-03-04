@@ -1,54 +1,69 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>Video Compressor</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ローカル動画圧縮 (v0.2)</title>
+  <meta property="og:title" content="ローカル動画圧縮(v0.2-cpuonly)">
+  <meta property="og:description" content="ローカル処理によって動画を指定したファイルサイズに圧縮する、ffmpeg.wasmベースのWebアプリです。">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ローカル動画圧縮">
+  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+  <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+  <script src="coi-serviceworker.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@latest/dist/ffmpeg.min.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Video Compressor</h1>
-        <div id="ffmpeg-status">ffmpeg-core Loading... <span id="checkmark" style="display: none;">✔</span></div>
-
-        <section class="input-section">
-            <label for="video-input">動画ファイルを選択:</label>
-            <input type="file" id="video-input" accept="video/*" disabled>
-        </section>
-
-        <section class="settings-section">
-            <label for="target-size">目標ファイルサイズ (MB):</label>
-            <input type="number" id="target-size" min="1" disabled>
-
-            <label for="framerate">フレームレート:</label>
-            <select id="framerate" disabled>
-                <option value="24">24fps</option>
-                <option value="30" selected>30fps</option>
-                <option value="60">60fps</option>
-            </select>
-
-            <label for="resolution">解像度:</label>
-            <select id="resolution" disabled>
-                <option value="1280x720">720p</option>
-                <option value="1920x1080" selected>1080p</option>
-                <option value="3840x2160">4K</option>
-            </select>
-
-            <label for="two-pass">2-passエンコード:</label>
-            <input type="checkbox" id="two-pass" disabled>
-        </section>
-
-        <button id="encode-btn" disabled>エンコード開始</button>
-
-        <section class="log-section">
-            <h2>システムログ</h2>
-            <pre id="log-area"></pre>
-        </section>
-
-        <footer>
-            <p>Build Version: 1137</span></p>
-        </footer>
+  <div class="container">
+    <h1>ローカル動画圧縮</h1>
+    <p class="description">動画ファイルを指定したファイルサイズに圧縮する処理をローカル環境で実行します。CPU処理なので低速です。</p>
+    
+    <div id="ffmpegStatus" class="status">ffmpeg-core ロード中... <span id="checkmark" style="display: none;">✔</span></div>
+    
+    <input type="file" id="upload" accept="video/*" class="file-input" disabled />
+    <div id="videoInfo" class="info"></div>
+    <img id="thumbnail" class="thumbnail" style="display: none;" />
+    
+    <div class="settings">
+      <label for="targetSize">目標ファイルサイズ (MB):</label>
+      <input type="number" id="targetSize" min="1" step="1" disabled />
+      
+      <label for="framerate">フレームレート:</label>
+      <select id="framerate" disabled>
+        <option value="24">24 fps</option>
+        <option value="30">30 fps</option>
+        <option value="60">60 fps</option>
+      </select>
+      
+      <label for="resolution">解像度:</label>
+      <select id="resolution" disabled>
+        <option value="original">元の解像度</option>
+        <option value="1920x1080">1920x1080</option>
+        <option value="1280x720">1280x720</option>
+        <option value="854x480">854x480</option>
+      </select>
+      
+      <label for="twoPass">2-pass エンコード:</label>
+      <input type="checkbox" id="twoPass" disabled />
     </div>
-    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
-    <script src="app.js"></script>
+    
+    <button id="compressBtn" class="btn" disabled>圧縮開始</button>
+    <progress id="progressBar" value="0" max="100" class="progress-bar"></progress>
+    
+    <div id="compressedInfo" class="info"></div>
+    <button id="downloadBtn" class="download-btn" style="display: none;">ダウンロード</button>
+    
+    <div id="logContainer" class="log-container">
+      <h3>出力</h3>
+      <pre id="logOutput"></pre>
+    </div>
+    
+    <footer>
+      <p>Build Version: <span id="buildVersion"></span></p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
