@@ -14,7 +14,7 @@ const compressedInfo = document.getElementById('compressedInfo');
 const downloadBtn = document.getElementById('downloadBtn');
 const buildVersion = document.getElementById('buildVersion');
 
-// ƒrƒ‹ƒhƒo[ƒWƒ‡ƒ“‚Ì•\¦iƒ‰ƒ“ƒ_ƒ€‚ÈŒÅ—L’lj
+// ãƒ“ãƒ«ãƒ‰ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã®è¡¨ç¤ºï¼ˆãƒ©ãƒ³ãƒ€ãƒ ãªå›ºæœ‰å€¤ï¼‰
 buildVersion.textContent = Math.random().toString(36).substring(2, 10);
 
 async function initFFmpeg() {
@@ -55,8 +55,8 @@ uploadInput.addEventListener('change', (event) => {
 function displayVideoInfo(file) {
   const url = URL.createObjectURL(file);
   videoInfo.innerHTML = `
-    <p>ƒtƒ@ƒCƒ‹–¼: ${file.name}</p>
-    <p>ƒTƒCƒY: ${(file.size / (1024 * 1024)).toFixed(2)} MB</p>
+    <p>ãƒ•ã‚¡ã‚¤ãƒ«å: ${file.name}</p>
+    <p>ã‚µã‚¤ã‚º: ${(file.size / (1024 * 1024)).toFixed(2)} MB</p>
   `;
 
   const video = document.createElement('video');
@@ -87,7 +87,7 @@ async function getVideoDuration(file) {
       window.URL.revokeObjectURL(video.src);
       resolve(video.duration);
     };
-    video.onerror = () => reject(new Error('“®‰æ‚Ìƒƒ^ƒf[ƒ^‚ğ“Ç‚İ‚ß‚Ü‚¹‚ñ‚Å‚µ‚½B'));
+    video.onerror = () => reject(new Error('å‹•ç”»ã®ãƒ¡ã‚¿ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚ã¾ã›ã‚“ã§ã—ãŸã€‚'));
     video.src = window.URL.createObjectURL(file);
   });
 }
@@ -101,7 +101,7 @@ async function calculateBitrate(targetSizeMB, duration) {
 async function compressVideo(file) {
   const targetSizeMB = parseInt(targetSizeInput.value, 10);
   if (!targetSizeMB || targetSizeMB <= 0) {
-    logOutput.textContent += 'ƒGƒ‰[: –Ú•Wƒtƒ@ƒCƒ‹ƒTƒCƒY‚ğ³‚µ‚­“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B\n';
+    logOutput.textContent += 'ã‚¨ãƒ©ãƒ¼: ç›®æ¨™ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºã‚’æ­£ã—ãå…¥åŠ›ã—ã¦ãã ã•ã„ã€‚\n';
     return;
   }
 
@@ -110,10 +110,10 @@ async function compressVideo(file) {
     progressBar.value = 0;
 
     const duration = await getVideoDuration(file);
-    logOutput.textContent += `“®‰æ‚Ì’·‚³: ${duration.toFixed(2)}•b\n`;
+    logOutput.textContent += `å‹•ç”»ã®é•·ã•: ${duration.toFixed(2)}ç§’\n`;
 
     const bitrate = await calculateBitrate(targetSizeMB, duration);
-    logOutput.textContent += `ŒvZ‚³‚ê‚½ƒrƒbƒgƒŒ[ƒg: ${bitrate}kbps\n`;
+    logOutput.textContent += `è¨ˆç®—ã•ã‚ŒãŸãƒ“ãƒƒãƒˆãƒ¬ãƒ¼ãƒˆ: ${bitrate}kbps\n`;
 
     const tempInputFileName = 'input.mp4';
     const outputFileName = getOutputFileName(file.name);
@@ -166,9 +166,9 @@ async function compressVideo(file) {
     const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
     const url = URL.createObjectURL(videoBlob);
 
-    compressedInfo.innerHTML = `<p>ˆ³kŒã‚ÌƒTƒCƒY: ${(videoBlob.size / (1024 * 1024)).toFixed(2)} MB</p>`;
+    compressedInfo.innerHTML = `<p>åœ§ç¸®å¾Œã®ã‚µã‚¤ã‚º: ${(videoBlob.size / (1024 * 1024)).toFixed(2)} MB</p>`;
     downloadBtn.style.display = 'inline-block';
-    downloadBtn.textContent = `${outputFileName} ‚ğƒ_ƒEƒ“ƒ[ƒh`;
+    downloadBtn.textContent = `${outputFileName} ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰`;
     downloadBtn.onclick = () => {
       const a = document.createElement('a');
       a.href = url;
@@ -179,7 +179,7 @@ async function compressVideo(file) {
     progressBar.style.display = 'none';
     ffmpeg.FS('unlink', tempInputFileName);
   } catch (error) {
-    logOutput.textContent += `ƒGƒ‰[: ${error.message}\n`;
+    logOutput.textContent += `ã‚¨ãƒ©ãƒ¼: ${error.message}\n`;
   }
 }
 
