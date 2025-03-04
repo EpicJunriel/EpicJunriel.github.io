@@ -1,146 +1,54 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ローカル動画圧縮</title>
-  <meta property="og:title" content="ローカル動画圧縮(v0.1-cpuonly)">
-  <meta property="og:description" content="ローカル処理によって動画をファイルサイズ10MB以下に収まるよう圧縮する、ffmpeg.wasmベースのWebアプリです。">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="ローカル動画圧縮">
-  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
-  <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
-  <script src="coi-serviceworker.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@latest/dist/ffmpeg.min.js"></script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Video Compressor</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>ローカル動画圧縮</h1>
-    <p class="description">動画ファイルを10MB程度に圧縮する処理をローカル環境で実行します。現状はCPU処理なのでかなり低速です。</p>
-    
-    <input type="file" id="upload" accept="video/*" class="file-input" />
-    <div id="videoInfo" class="info"></div>
-    <img id="thumbnail" class="thumbnail" />
-    
-    <button id="compressBtn" class="btn" disabled>圧縮開始</button>
-    <progress id="progressBar" value="0" max="100" class="progress-bar"></progress>
-    
-    <div id="compressedInfo" class="info"></div>
-    <button id="downloadBtn" class="download-btn" style="display: none;">ダウンロード</button>
-    
-    <div id="logContainer" class="log-container">
-      <h3>出力</h3>
-      <pre id="logOutput"></pre>
+    <div class="container">
+        <h1>Video Compressor</h1>
+        <div id="ffmpeg-status">ffmpeg-core Loading... <span id="checkmark" style="display: none;">✔</span></div>
+
+        <section class="input-section">
+            <label for="video-input">動画ファイルを選択:</label>
+            <input type="file" id="video-input" accept="video/*" disabled>
+        </section>
+
+        <section class="settings-section">
+            <label for="target-size">目標ファイルサイズ (MB):</label>
+            <input type="number" id="target-size" min="1" disabled>
+
+            <label for="framerate">フレームレート:</label>
+            <select id="framerate" disabled>
+                <option value="24">24fps</option>
+                <option value="30" selected>30fps</option>
+                <option value="60">60fps</option>
+            </select>
+
+            <label for="resolution">解像度:</label>
+            <select id="resolution" disabled>
+                <option value="1280x720">720p</option>
+                <option value="1920x1080" selected>1080p</option>
+                <option value="3840x2160">4K</option>
+            </select>
+
+            <label for="two-pass">2-passエンコード:</label>
+            <input type="checkbox" id="two-pass" disabled>
+        </section>
+
+        <button id="encode-btn" disabled>エンコード開始</button>
+
+        <section class="log-section">
+            <h2>システムログ</h2>
+            <pre id="log-area"></pre>
+        </section>
+
+        <footer>
+            <p>Build Version: <span id="version"></span></p>
+        </footer>
     </div>
-  </div>
-
-  <script>
-    let ffmpeg;
-
-    async function initFFmpeg() {
-      ffmpeg = await FFmpeg.createFFmpeg({
-        log: true,
-        progress: (p) => {
-          const progressBar = document.getElementById('progressBar');
-          if (p.ratio) progressBar.value = Math.round(p.ratio * 100);
-        }
-      });
-
-      function enableAutoScroll() {
-        const logOutput = document.getElementById('logOutput');
-        const observer = new MutationObserver(() => {
-          logOutput.scrollTop = logOutput.scrollHeight;
-        });
-        observer.observe(logOutput, { childList: true });
-      }
-
-      ffmpeg.setLogger(({ type, message }) => {
-        const logOutput = document.getElementById('logOutput');
-        logOutput.textContent += `[${type}] ${message}\n`;
-      });
-
-      enableAutoScroll();
-      await ffmpeg.load();
-    }
-
-    document.getElementById('upload').addEventListener('change', (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        displayVideoInfo(file);
-        document.getElementById('compressBtn').disabled = false;
-        document.getElementById('compressBtn').onclick = () => compressVideo(file);
-      }
-    });
-
-    function displayVideoInfo(file) {
-      const videoInfo = document.getElementById('videoInfo');
-      const thumbnail = document.getElementById('thumbnail');
-      const url = URL.createObjectURL(file);
-
-      videoInfo.innerHTML = `
-        <p>ファイル名: ${file.name}</p>
-        <p>サイズ: ${(file.size / (1024 * 1024)).toFixed(2)} MB</p>
-      `;
-
-      const video = document.createElement('video');
-      video.src = url;
-      video.currentTime = 1;
-      video.addEventListener('loadeddata', () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        thumbnail.src = canvas.toDataURL('image/png');
-        thumbnail.style.display = 'block';
-      });
-    }
-
-    function getOutputFileName(inputFileName) {
-      const baseName = inputFileName.substring(0, inputFileName.lastIndexOf('.'));
-      const extension = inputFileName.substring(inputFileName.lastIndexOf('.'));
-      return `${baseName}_compressed${extension}`;
-    }
-
-    async function compressVideo(file) {
-      const progressBar = document.getElementById('progressBar');
-      progressBar.style.display = 'block';
-      progressBar.value = 0;
-
-      const tempInputFileName = 'temp_input.mp4';
-      const outputFileName = getOutputFileName(file.name);
-
-      // **空白を含むファイル名に対応するために、一時ファイル名を使用**
-      await ffmpeg.FS('writeFile', tempInputFileName, new Uint8Array(await file.arrayBuffer()));
-
-      await ffmpeg.run('-i', tempInputFileName, '-vcodec', 'libx264', '-crf', '28', '-preset', 'fast', '-movflags', '+faststart', '-fs', '8M', outputFileName);
-
-      const data = ffmpeg.FS('readFile', outputFileName);
-      const videoBlob = new Blob([data.buffer], { type: 'video/mp4' });
-      const url = URL.createObjectURL(videoBlob);
-
-      const compressedInfo = document.getElementById('compressedInfo');
-      compressedInfo.innerHTML = `<p>圧縮後のサイズ: ${(videoBlob.size / (1024 * 1024)).toFixed(2)} MB</p>`;
-
-      const downloadBtn = document.getElementById('downloadBtn');
-      downloadBtn.style.display = 'inline-block';
-      downloadBtn.classList.add('download-btn');
-      downloadBtn.textContent = `${outputFileName} をダウンロード`;
-      downloadBtn.onclick = () => {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = outputFileName;
-        a.click();
-      };
-
-      progressBar.style.display = 'none';
-
-      // **一時ファイルを削除**
-      ffmpeg.FS('unlink', tempInputFileName);
-    }
-
-    initFFmpeg();
-  </script>
+    <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
