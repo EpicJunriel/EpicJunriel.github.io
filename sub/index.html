@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>サブスクトラッカー</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>サブスクトラッカー</h1>
+  <div id="form">
+    <input type="text" id="serviceName" placeholder="サブスクサービス名">
+    <input type="number" id="monthlyCost" placeholder="月額費用 (円)">
+    <input type="number" id="paymentDay" placeholder="支払日 (1〜31)">
+    <button onclick="addSubscription()">追加</button>
+  </div>
+
+  <h2>サブスク一覧</h2>
+  <div id="subscriptions"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
