@@ -14,9 +14,6 @@ const compressedInfo = document.getElementById('compressedInfo');
 const downloadBtn = document.getElementById('downloadBtn');
 const buildVersion = document.getElementById('buildVersion');
 
-// ビルドバージョンの表示（ランダムな固有値）
-// buildVersion.textContent = Math.random().toString(36).substring(2, 10);
-
 async function initFFmpeg() {
   ffmpeg = await FFmpeg.createFFmpeg({
     log: true,
