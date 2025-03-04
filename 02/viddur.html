@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <script type="text/javascript">
+
+    // 動画の再生時間上限
+    MAX_DURATION = 300
+
+    window.onload = function() {
+      // ファイル選択時のイベントを設定
+      document.getElementById("movie-input").onchange = function(e){
+        var file = e.target.files[0];
+        // 選択されたファイルをチェック用のメソッドに渡す
+        checkVideoDuration(file);
+      }
+    }
+
+    // 再生時間チェック用メソッド
+    var checkVideoDuration = function(file) {
+      var video = document.createElement('video');
+      var fileURL = URL.createObjectURL(file);
+      video.src = fileURL;
+      video.ondurationchange = function() {
+        if(parseInt(this.duration) > MAX_DURATION) {
+          alert("動画長さが" + MAX_DURATION + "秒を超えています。");
+        } else {
+          alert(this.duration);
+        }
+        URL.revokeObjectURL(this.src);
+      };
+      console.log("この部分は非同期処理");
+    }
+
+  </script>
+
+  <head>
+    <meta charset="utf-8">
+    <title>動画時間チェック</title>
+  </head>
+
+  <body>
+    <input type="file" id="movie-input" name="movie-input">
+  </body>
+
+</html>
